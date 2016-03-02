@@ -1,22 +1,33 @@
-import React from 'react';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import SearchBar from './components/search_bar';
+import VideoList from './components/video_list';
+import VideoDetail from './components/video_detail';
+import credentials from './google_credentials';
+import YTSearch from 'youtube-api-search';
 
-const VideoListItem = ({ video }) => {
+const API_KEY  = credentials.youtube;
 
-	const imageUrl = video.snippet.thumbnails.default.url;
-	console.log(video);
-	return(
-		<li className="list-group-item">
-			<div className="video-list media">
-				<div className="media-left">
-					<img src={ imageUrl } className="media-object" />
-				</div>	
-				<div className="media-body">
-					<div className="media-heading">{ video.snippet.title } </div>
-				</div>
-				
+class App extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = { videos: [] };
+
+		YTSearch({key: API_KEY, term: 'hello world'}, (videos) => {
+			this.setState({ videos });
+		});
+	}
+
+	render() {
+		return(
+			<div>
+				<SearchBar />
+				<VideoDetail video={ this.state.videos[0] } />
+				<VideoList videos = { this.state.videos } />
 			</div>
-		</li>
-	);
+			)
+	}
 }
 
-export default VideoListItem;
+ReactDOM.render(<App/>, document.querySelector('.container'));
